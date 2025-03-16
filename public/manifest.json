@@ -1,0 +1,22 @@
+{
+  "name": "Eiffage Webapp Evaluation",
+  "short_name": "Eiffage Eval",
+  "description": "Application d'évaluation des compétences pour les équipes Eiffage",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#EB0000",
+  "orientation": "landscape",
+  "icons": [
+    {
+      "src": "/favicon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-144x144.png", 
+      "sizes": "144x144",
+      "type": "image/png"
+    }
+  ]
+}
