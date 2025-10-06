@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import type { User } from '~/types/auth'
 import type {
     Evaluation,
     CreateCompleteEvaluationRequest,
@@ -10,8 +11,18 @@ export const useEvaluation = () => {
 
     const evaluations = ref<Evaluation[]>([])
     const currentEvaluation = ref<Evaluation | null>(null)
+    // Selected team member for current evaluation flow
+    const selectedEvaluationUser = useState<User | null>('evaluation-selected-team-member', () => null)
     const loading = ref(false)
     const error = ref<string | null>(null)
+
+    function setSelectedEvaluationUser(user: User | null) {
+        selectedEvaluationUser.value = user
+    }
+
+    function clearSelectedEvaluationUser() {
+        selectedEvaluationUser.value = null
+    }
 
     // Get all evaluations
     async function getEvaluations(): Promise<Evaluation[]> {
@@ -97,6 +108,9 @@ export const useEvaluation = () => {
     return {
         evaluations,
         currentEvaluation,
+        selectedEvaluationUser,
+        setSelectedEvaluationUser,
+        clearSelectedEvaluationUser,
         loading,
         error,
         getEvaluations,

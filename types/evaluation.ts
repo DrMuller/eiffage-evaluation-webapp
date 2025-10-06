@@ -4,14 +4,14 @@ export interface EvaluationSkill {
     skillId: string;
     macroSkillId: string;
     macroSkillTypeId: string;
-    expectedLevel: string | null;
-    observedLevel: string | null;
+    expectedLevel: number | null;
+    observedLevel: number | null;
     gap: number | null;
     createdAt: Date;
     skill: {
         _id: string;
         name: string;
-        expectedLevel: string | null;
+        expectedLevel: number | null;
         macroSkill: {
             _id: string;
             name: string;
@@ -31,12 +31,7 @@ export interface Evaluation {
     userJobId?: string;
     userJobCode?: string;
     userId: string;
-    userName: string;
-    userCode: string;
     managerUserId?: string;
-    managerUserName?: string;
-    managerUserCode?: string;
-    observationDate: Date;
     createdAt: Date;
     updatedAt: Date;
     createdBy: string;
@@ -47,25 +42,20 @@ export interface CreateEvaluationRequest {
     userJobId?: string;
     userJobCode?: string;
     userId: string;
-    userName: string;
-    userCode: string;
     managerUserId?: string;
-    managerUserName?: string;
-    managerUserCode?: string;
-    observationDate: string;
 }
 
 export interface CreateCompleteEvaluationRequest {
     evaluation: CreateEvaluationRequest;
     skills: Array<{
         skillId: string;
-        expectedLevel: string | null;
-        observedLevel: string | null;
+        expectedLevel: number | null;
+        observedLevel: number | null;
     }>;
 }
 
 export interface JobSkillWithLevel {
     skill: import('./skills').Skill;
-    levelExpected: string | null;
+    levelExpected: number | null;
 }
 

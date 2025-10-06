@@ -1,5 +1,7 @@
 <template>
-  <div class="layout-empty">
-    <slot />
+  <div>
+    <main>
+      <slot />
+    </main>
   </div>
 </template>
