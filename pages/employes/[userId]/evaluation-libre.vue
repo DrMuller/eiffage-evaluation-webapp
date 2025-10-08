@@ -17,29 +17,36 @@
 
             <!-- Step 2: Evaluate Skills -->
             <div v-else>
-                <!-- Selected User Info -->
-                <div class="bg-white shadow rounded-lg p-6 mb-6">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="flex-shrink-0 h-16 w-16 bg-red-600 rounded-full flex items-center justify-center">
-                                <span class="text-white font-semibold text-2xl">
-                                    {{ selectedUser.firstName[0] }}{{ selectedUser.lastName[0] }}
-                                </span>
+                <div class="flex items-center gap-4 mb-6">
+                    <UCard class="p-6">
+                        <span class="text-6xl font-semibold text-red-600">
+                            {{ evaluatedSkillsCount }}
+                        </span>
+                        <span class="text-4xl font-semibold text-gray-600">/{{ jobSkills.length }}</span>
+                    </UCard>
+                    <UCard class="p-6 w-[500px]">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="flex-shrink-0 h-16 w-16 bg-red-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-semibold text-2xl">
+                                        {{ selectedUser.firstName[0] }}{{ selectedUser.lastName[0] }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-semibold text-gray-900">
+                                        {{ selectedUser.firstName }} {{ selectedUser.lastName }}
+                                    </h2>
+                                    <p class="text-sm text-gray-500">{{ selectedUser.email }}</p>
+                                </div>
                             </div>
-                            <div>
-                                <h2 class="text-xl font-semibold text-gray-900">
-                                    {{ selectedUser.firstName }} {{ selectedUser.lastName }}
-                                </h2>
-                                <p class="text-sm text-gray-500">{{ selectedUser.email }}</p>
-                            </div>
+                            <button
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                                @click="resetSelection">
+                                Changer d'utilisateur
+                            </button>
                         </div>
-                        <button
-                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                            @click="resetSelection">
-                            Changer d'utilisateur
-                        </button>
-                    </div>
+                    </UCard>
                 </div>
 
                 <!-- Loading Skills -->
@@ -63,13 +70,6 @@
 
                 <!-- Skills List -->
                 <div v-else>
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600">
-                            Cliquez sur une compétence pour l'évaluer.
-                            {{ evaluatedSkillsCount }}/{{ jobSkills.length }} compétences évaluées
-                        </p>
-                    </div>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                         <UCard v-for="jobSkill in jobSkills" :key="jobSkill.skill._id"
                             class="rounded-lg hover:shadow-md active:shadow-md transition-all text-left relative cursor-pointer"
@@ -84,7 +84,7 @@
                                             `${skillEvaluations[jobSkill.skill._id]}/5` : '-/5' }}
                                     </div>
                                     <h3 class="text-sm font-semibold text-gray-900 flex-1">{{ jobSkill.skill.name
-                                    }}
+                                        }}
                                     </h3>
                                 </div>
                                 <div class="flex items-center justify-between pt-2 border-t border-gray-200">
@@ -298,14 +298,8 @@ async function submitEvaluation() {
 
         await createCompleteEvaluation(evaluationData)
 
-        toast.add({
-            title: 'Succès',
-            description: 'L\'évaluation a été créée avec succès',
-            color: 'success'
-        })
-
-        // Redirect to home or evaluations list
-        router.push('/')
+        // Redirect to success page
+        router.push('/evaluation-success')
     } catch {
         toast.add({
             title: 'Erreur',

@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-blue-50">
-    <div class="p-8 bg-white rounded-lg shadow-sm w-[400px]">
+  <div class="flex items-center justify-center">
+    <div class="p-8 bg-white rounded-xl shadow-sm w-[400px]">
       <div class="mb-8">
         <!-- <img src="/logo.webp" alt="Eiffage" class="w-10 h-10 mb-6"> -->
         <h1 class="text-3xl font-bold">Connexion à Eiffage</h1>
@@ -10,7 +10,7 @@
         <div class="mb-4">
           <label for="email" class="block mb-2 text-gray-700">Email</label>
           <input id="email" v-model="email" type="email" required placeholder="john.doe@gmail.com"
-            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
           <p v-if="emailError" class="mt-1 text-sm text-orange-600">L'email doit être valide</p>
         </div>
 
@@ -19,7 +19,7 @@
           <div class="relative">
             <input id="password" v-model="password" :type="showPassword ? 'text' : 'password'" required
               placeholder="mot de passe"
-              class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
             <button type="button" class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600"
               @click="showPassword = !showPassword">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
@@ -49,10 +49,9 @@
           </div>
         </div>
 
-        <button type="submit" :disabled="isLoading"
-          class="w-full py-3 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+        <UButton type="submit" :disabled="isLoading" class="w-full rounded-xl justify-center p-6">
           {{ isLoading ? 'Connexion en cours...' : 'Se connecter' }}
-        </button>
+        </UButton>
       </form>
     </div>
   </div>

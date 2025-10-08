@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-definePageMeta({ layout: 'empty' })
+definePageMeta({ layout: 'photo' })
 useHead({
     title: 'Mot de passe oublié | Eiffage'
 });

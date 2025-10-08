@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'empty' })
+definePageMeta({ layout: 'photo' })
 useHead({ title: 'Connexion | Eiffage' })
 </script>
 

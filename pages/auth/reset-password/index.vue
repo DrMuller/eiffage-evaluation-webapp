@@ -11,7 +11,7 @@ const route = useRoute();
 const token = ref('');
 const isInvalidToken = ref(false);
 definePageMeta({
-    layout: 'empty'
+    layout: 'photo'
 });
 useHead({
     title: 'Réinitialiser le mot de passe | Eiffage'
