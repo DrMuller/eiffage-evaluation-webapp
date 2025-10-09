@@ -4,10 +4,10 @@ import type { User } from '~/types/auth'
 export const useUsers = () => {
   const { $api } = useNuxtApp()
 
-  const currentUser = ref<User | null>(null)
-  const users = ref<User[]>([])
-  const managers = ref<User[]>([])
-  const teamMembers = ref<User[]>([])
+  const currentUser = useState<User | null>('users:currentUser', () => null)
+  const users = useState<User[]>('users:all', () => [])
+  const managers = useState<User[]>('users:managers', () => [])
+  const teamMembers = useState<User[]>('users:teamMembers', () => [])
   const loading = ref(false)
   const error = ref<string | null>(null)
 

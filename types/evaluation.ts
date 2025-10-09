@@ -1,3 +1,5 @@
+import type { Skill } from "./skills";
+
 export interface EvaluationSkill {
     _id: string;
     evaluationId: string;
@@ -55,7 +57,7 @@ export interface CreateCompleteEvaluationRequest {
 }
 
 export interface JobSkillWithLevel {
-    skill: import('./skills').Skill;
+    skill: Skill;
     levelExpected: number | null;
 }
 

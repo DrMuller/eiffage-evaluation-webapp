@@ -4,7 +4,7 @@ import type { Job } from '~/types/jobs'
 export const useJobs = () => {
     const { $api } = useNuxtApp()
 
-    const jobs = ref<Job[]>([])
+    const jobs = useState<Job[]>('jobs:all', () => [])
     const loading = ref(false)
     const error = ref<string | null>(null)
 

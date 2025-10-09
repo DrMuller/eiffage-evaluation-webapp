@@ -14,7 +14,7 @@
         class="w-full rounded-xl p-10 bg-white shadow-[0_6px_0_rgba(0,0,0,0.25)] px-8 text-left flex items-center justify-between hover:bg-red-100 active:bg-red-200"
         @click="openTeamSelection('free')">
         <span>
-          <span class="text-xl font-semibold text-gray-900">Nouvelle évaluation librement</span>
+          <span class="text-xl font-semibold text-gray-900">Nouvelle évaluation libre</span>
           <span class="block text-gray-500 text-sm">Ajouter des compétences librement</span>
         </span>
         <UIcon name="i-heroicons-arrow-right" class="w-7 h-7 text-gray-900" />
@@ -59,6 +59,8 @@ definePageMeta({
 
 const router = useRouter()
 const { getTeamMembers, teamMembers, loading: loadingUsers } = useUsers()
+const { getJobs } = useJobs()
+const { getMacroSkills, getMacroSkillTypes, getSkills } = useSkills()
 const { setSelectedEvaluationUser, selectedEvaluationUser } = useEvaluation()
 
 type EvaluationType = 'job' | 'free'
@@ -68,6 +70,10 @@ const isTeamModalOpen = ref(false)
 
 onMounted(async () => {
   await getTeamMembers()
+  await getJobs()
+  await getSkills()
+  await getMacroSkillTypes()
+  await getMacroSkills()
 })
 
 
@@ -79,8 +85,8 @@ function openTeamSelection(evaluationType: EvaluationType) {
 function selectTeamMember(user: User) {
   setSelectedEvaluationUser(user)
   isTeamModalOpen.value = false
-  if(!selectedEvaluationUser.value) return
-  if(type.value === 'job') {
+  if (!selectedEvaluationUser.value) return
+  if (type.value === 'job') {
     router.push({ path: `/employes/${selectedEvaluationUser.value._id}/evaluation` })
   } else {
     router.push({ path: `/employes/${selectedEvaluationUser.value._id}/evaluation-libre` })

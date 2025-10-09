@@ -1,11 +1,16 @@
 <template>
-    <div class="bg-gray-50">
-        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div>
+
+        <div>
+            <AppHeaderMenu />
             <!-- Header -->
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900">Évaluation des compétences</h1>
-                <p class="mt-2 text-sm text-gray-600">Évaluez les compétences d'un membre de votre équipe sur son emploi
-                </p>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Évaluation des compétences</h1>
+                    <p class="mt-2 text-sm text-gray-600">Évaluez les compétences d'un membre de votre équipe sur son
+                        emploi
+                    </p>
+                </div>
             </div>
 
             <!-- Step 1: Ensure Selected Team Member exists (redirect if not) -->
@@ -17,18 +22,12 @@
 
             <!-- Step 2: Evaluate Skills -->
             <div v-else>
-                <div class="flex items-center gap-4 mb-6">
-                    <UCard class="p-6">
-                        <span class="text-6xl font-semibold text-red-600">
-                            {{ evaluatedSkillsCount }}
-                        </span>
-                        <span class="text-4xl font-semibold text-gray-600">/{{ jobSkills.length }}</span>
-                    </UCard>
-                    <UCard class="p-6 w-[500px]">
+                <div class="mb-6">
+                    <UCard class="p-6 w-full">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div
-                                    class="flex-shrink-0 h-16 w-16 bg-red-600 rounded-full flex items-center justify-center">
+                                    class="flex-shrink-0 h-16 w-16 bg-primary-500 rounded-full flex items-center justify-center">
                                     <span class="text-white font-semibold text-2xl">
                                         {{ selectedUser.firstName[0] }}{{ selectedUser.lastName[0] }}
                                     </span>
@@ -40,130 +39,70 @@
                                     <p class="text-sm text-gray-500">{{ selectedUser.email }}</p>
                                 </div>
                             </div>
-                            <button
-                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                                @click="resetSelection">
-                                Changer d'utilisateur
-                            </button>
+                            <div class="flex items-center gap-3">
+                                <div>
+                                    <UButton variant="subtle" class="px-8 py-3 rounded-full"
+                                        @click="openAddSkillsModal">
+                                        Ajouter des compétences
+                                    </UButton>
+                                </div>
+                                <div class="p-4 flex items-center gap-6">
+                                    <div>
+                                        <span class="text-6xl font-semibold text-primary-500">
+                                            {{ evaluatedSkillsCount }}
+                                        </span>
+                                        <span class="text-4xl font-semibold text-gray-600">/{{ selectedSkills.length
+                                        }}</span>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </UCard>
                 </div>
 
-                <!-- Loading Skills -->
-                <div v-if="loadingSkills" class="flex justify-center py-12">
-                    <UIcon name="i-heroicons-arrow-path" class="w-12 h-12 animate-spin text-red-600" />
-                </div>
-
-                <!-- No Job Assigned -->
-                <div v-else-if="!selectedUser.jobId"
-                    class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-                    <UIcon name="i-heroicons-exclamation-triangle" class="w-12 h-12 text-yellow-600 mx-auto mb-2" />
-                    <p class="text-yellow-800 font-medium">Cet utilisateur n'a pas d'emploi assigné</p>
-                </div>
-
-                <!-- No Skills for Job -->
-                <div v-else-if="jobSkills.length === 0"
+                <!-- Empty state -->
+                <div v-if="selectedSkills.length === 0"
                     class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
                     <UIcon name="i-heroicons-information-circle" class="w-12 h-12 text-blue-600 mx-auto mb-2" />
-                    <p class="text-blue-800 font-medium">Aucune compétence définie pour cet emploi</p>
+                    <p class="text-blue-800 font-medium mb-4">Aucune compétence sélectionnée</p>
                 </div>
 
                 <!-- Skills List -->
                 <div v-else>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                        <UCard v-for="jobSkill in jobSkills" :key="jobSkill.skill._id"
-                            class="rounded-lg hover:shadow-md active:shadow-md transition-all text-left relative cursor-pointer"
-                            :class="isSkillEvaluated(jobSkill.skill._id) ? 'border-1 border-green-500 bg-green-50' : 'border-gray-200'"
-                            :ui="{ body: 'h-full' }" @click="openEvaluationModal(jobSkill)">
-
-                            <div class="p-4 h-full space-y-2 flex flex-col justify-between">
-                                <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-lg font-bold text-sm"
-                                        :class="isSkillEvaluated(jobSkill.skill._id) ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'">
-                                        {{ isSkillEvaluated(jobSkill.skill._id) ?
-                                            `${skillEvaluations[jobSkill.skill._id]}/5` : '-/5' }}
-                                    </div>
-                                    <h3 class="text-sm font-semibold text-gray-900 flex-1">{{ jobSkill.skill.name
-                                        }}
-                                    </h3>
-                                </div>
-                                <div class="flex items-center justify-between pt-2 border-t border-gray-200">
-                                    <p class="text-xs text-gray-500">
-                                        <span class="font-medium">Niveau attendu:</span>
-                                        {{ jobSkill.levelExpected || 'Non défini' }}
-                                    </p>
-                                </div>
-                            </div>
-                        </UCard>
+                        <SkillsEvaluationSkillCard v-for="jobSkill in selectedSkills" :key="jobSkill.skill._id"
+                            :job-skill="jobSkill" :is-evaluated="isSkillEvaluated(jobSkill.skill._id)"
+                            :evaluation-score="skillEvaluations[jobSkill.skill._id]" :clickable="true" :removable="true"
+                            @click="openEvaluationModal" @remove="removeSelectedSkill" />
                     </div>
 
                     <!-- Submit Button -->
                     <div class="flex justify-center">
-                        <button :disabled="evaluatedSkillsCount === 0 || submitting"
-                            class="px-8 py-3 bg-red-600 text-white font-semibold rounded-full shadow-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                        <UButton :disabled="evaluatedSkillsCount === 0 || submitting" class="px-8 py-3 rounded-full"
                             @click="submitEvaluation">
                             <span v-if="submitting" class="flex items-center gap-2">
                                 <UIcon name="i-heroicons-arrow-path" class="w-5 h-5 animate-spin" />
                                 Envoi en cours...
                             </span>
                             <span v-else>
-                                Terminer l'évaluation ({{ evaluatedSkillsCount }}/{{ jobSkills.length }})
+                                Terminer l'évaluation ({{ evaluatedSkillsCount }}/{{ selectedSkills.length }})
                             </span>
-                        </button>
+                        </UButton>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Evaluation Modal -->
-        <UModal v-model:open="isModalOpen" title="Évaluation">
-            <template #body>
-                <div class="p-6">
-                    <div v-if="currentSkill" class="space-y-6">
-                        <!-- Skill Details -->
-                        <div class="bg-gray-50 rounded-lg p-4 space-y-2">
-                            <p class="text-sm text-gray-600">
-                                <span class="font-medium">{{ currentSkill.skill.name }}</span>
-                            </p>
-                            <p class="text-sm text-gray-600">
-                                <span class="font-medium">Niveau attendu:</span>
-                                {{ currentSkill.levelExpected || 'Non défini' }}
-                            </p>
-                        </div>
+        <SkillsEvaluationModal v-model:open="isModalOpen" :job-skill="currentSkill" :level="observedLevel"
+            @save="saveEvaluation" @update:open="onModalOpenUpdate" />
 
-                        <!-- Slider -->
-                        <div class="space-y-4">
-                            <label class="block text-sm font-medium text-gray-700">
-                                Niveau observé: <span class="text-red-600 font-bold text-lg">{{ observedLevel }}</span>
-                            </label>
-                            <USlider v-model="observedLevel" :min="0" :max="5" :step="1" />
-                            <div class="flex justify-between text-xs text-gray-500">
-                                <span>0</span>
-                                <span>1</span>
-                                <span>2</span>
-                                <span>3</span>
-                                <span>4</span>
-                                <span>5</span>
-                            </div>
-                        </div>
+        <!-- Add Skills Modal -->
+        <SkillsAddSkillsModal v-model:open="isAddModalOpen" :jobs="jobs" :skills="skills" :macro-skills="macroSkills"
+            :macro-skill-types="macroSkillTypes" :already-selected-skills="selectedSkills"
+            @add-skills="handleAddSkills" />
 
-                        <!-- Actions -->
-                        <div class="flex justify-end gap-3 pt-4">
-                            <button
-                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                                @click="closeModal">
-                                Annuler
-                            </button>
-                            <button
-                                class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
-                                @click="saveEvaluation">
-                                Enregistrer
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </UModal>
     </div>
 </template>
 
@@ -175,14 +114,16 @@ definePageMeta({
     requiresAuth: true
 })
 
-const { getJobSkills, createCompleteEvaluation, selectedEvaluationUser, clearSelectedEvaluationUser } = useEvaluation()
+const { createCompleteEvaluation, selectedEvaluationUser, setSelectedEvaluationUser } = useEvaluation()
+const { getJobs, jobs } = useJobs()
 const { getCurrentUser, currentUser } = useUsers()
+const { getSkills, skills, getMacroSkills, macroSkills, getMacroSkillTypes, macroSkillTypes } = useSkills()
+
 const toast = useToast()
 const router = useRouter()
 
 // State
-const jobSkills = ref<JobSkillWithLevel[]>([])
-const loadingSkills = ref(false)
+const selectedSkills = ref<JobSkillWithLevel[]>([])
 const isModalOpen = ref(false)
 const currentSkill = ref<JobSkillWithLevel | null>(null)
 
@@ -199,7 +140,24 @@ const evaluatedSkillsCount = computed(() => Object.keys(skillEvaluations.value).
 // Load current user and job skills for selected team member
 onMounted(async () => {
     try {
-        await getCurrentUser()
+
+        console.log(skills.value)
+        console.log(macroSkillTypes.value)
+        console.log(jobs.value)
+        console.log(macroSkills.value)
+        console.log(currentUser.value)
+
+        if (!skills.value.length)
+            await getSkills()
+        if (!macroSkillTypes.value.length)
+            await getMacroSkillTypes()
+        if (!jobs.value.length)
+            await getJobs()
+        if (!macroSkills.value.length)
+            await getMacroSkills()
+        if (!currentUser.value)
+            await getCurrentUser()
+
     } catch {
         toast.add({
             title: 'Erreur',
@@ -207,49 +165,36 @@ onMounted(async () => {
             color: 'error'
         })
     }
-
     if (!selectedUser.value) {
         router.push('/')
         return
     }
-
-    await loadJobSkillsForSelectedUser()
 })
 
-async function loadJobSkillsForSelectedUser() {
-    const user = selectedUser.value
-    if (!user) return
-    skillEvaluations.value = {}
-    if (!user.jobId) {
-        jobSkills.value = []
-        return
-    }
-    loadingSkills.value = true
-    try {
-        jobSkills.value = await getJobSkills(user.jobId)
-    } catch {
-        toast.add({
-            title: 'Erreur',
-            description: 'Impossible de charger les compétences de l\'emploi',
-            color: 'error'
-        })
-    } finally {
-        loadingSkills.value = false
+// Add Skills Modal state
+const isAddModalOpen = ref(false)
+
+function openAddSkillsModal() {
+    isAddModalOpen.value = true
+}
+
+function handleAddSkills(skillsToAdd: JobSkillWithLevel[]) {
+    for (const skill of skillsToAdd) {
+        if (!selectedSkills.value.some(s => s.skill._id === skill.skill._id)) {
+            selectedSkills.value.push(skill)
+        }
     }
 }
 
-// Reset selection
-function resetSelection() {
-    clearSelectedEvaluationUser()
-    jobSkills.value = []
-    skillEvaluations.value = {}
-    router.push('/')
+function removeSelectedSkill(skillId: string) {
+    selectedSkills.value = selectedSkills.value.filter(s => s.skill._id !== skillId)
+    const { [skillId]: _removed, ...rest } = skillEvaluations.value
+    skillEvaluations.value = rest
 }
 
 // Open modal to evaluate a skill
 function openEvaluationModal(jobSkill: JobSkillWithLevel) {
     currentSkill.value = jobSkill
-
     observedLevel.value = skillEvaluations.value[jobSkill.skill._id] ?? 3
     isModalOpen.value = true
 }
@@ -261,9 +206,9 @@ function closeModal() {
 }
 
 // Save evaluation
-function saveEvaluation() {
+function saveEvaluation(level: number) {
     if (currentSkill.value) {
-        skillEvaluations.value[currentSkill.value.skill._id] = observedLevel.value
+        skillEvaluations.value[currentSkill.value.skill._id] = level
         closeModal()
     }
 }
@@ -284,22 +229,20 @@ async function submitEvaluation() {
         const evaluationData = {
             evaluation: {
                 userId: selectedUser.value._id,
-                userJobId: selectedUser.value.jobId || undefined,
                 managerUserId: currentUser.value._id,
             },
-            skills: jobSkills.value
+            skills: selectedSkills.value
                 .filter(js => isSkillEvaluated(js.skill._id))
                 .map(js => ({
                     skillId: js.skill._id,
                     expectedLevel: js.levelExpected,
-                    observedLevel: skillEvaluations.value[js.skill._id]
+                    observedLevel: skillEvaluations.value[js.skill._id] ?? null
                 }))
         }
 
         await createCompleteEvaluation(evaluationData)
-
-        // Redirect to success page
         router.push('/evaluation-success')
+        setSelectedEvaluationUser(null)
     } catch {
         toast.add({
             title: 'Erreur',

@@ -25,7 +25,7 @@ export interface Skill {
   _id: string;
   name: string;
   description?: string;
-  expectedLevel: string | null;
+  expectedLevel: number | null;
   levels?: string[];
   macroSkillId: string;
   macroSkill: {
@@ -35,11 +35,12 @@ export interface Skill {
     macroSkillType: MacroSkillType;
     createdAt: Date;
   };
+  jobIds: string[];
   createdAt: Date;
 }
 
 export interface CreateSkillRequest {
   name: string;
-  expectedLevel?: string | null;
+  expectedLevel?: number | null;
   macroSkillId: string;
 }

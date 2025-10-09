@@ -12,9 +12,9 @@ export const useSkills = () => {
     const { $api } = useNuxtApp()
 
     // State
-    const macroSkillTypes = ref<MacroSkillType[]>([])
-    const macroSkills = ref<MacroSkill[]>([])
-    const skills = ref<Skill[]>([])
+    const macroSkillTypes = useState<MacroSkillType[]>('skills:macroSkillTypes', () => [])
+    const macroSkills = useState<MacroSkill[]>('skills:macroSkills', () => [])
+    const skills = useState<Skill[]>('skills:skills', () => [])
     const loading = ref(false)
     const error = ref<string | null>(null)
 
