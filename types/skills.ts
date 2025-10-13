@@ -24,23 +24,15 @@ export interface CreateMacroSkillRequest {
 export interface Skill {
   _id: string;
   name: string;
-  description?: string;
-  expectedLevel: number | null;
-  levels?: string[];
   macroSkillId: string;
-  macroSkill: {
-    _id: string;
-    name: string;
-    macroSkillTypeId: string;
-    macroSkillType: MacroSkillType;
-    createdAt: Date;
-  };
+  macroSkillName: string;
+  macroSkillTypeId: string;
+  macroSkillTypeName: string;
   jobIds: string[];
   createdAt: Date;
 }
 
 export interface CreateSkillRequest {
   name: string;
-  expectedLevel?: number | null;
   macroSkillId: string;
 }

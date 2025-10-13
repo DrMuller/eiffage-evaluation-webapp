@@ -6,15 +6,17 @@ import type {
     JobSkillWithLevel
 } from '~/types/evaluation'
 
+// Hoisted shared state
+const evaluations = ref<Evaluation[]>([])
+const currentEvaluation = ref<Evaluation | null>(null)
+const loading = ref(false)
+const error = ref<string | null>(null)
+
 export const useEvaluation = () => {
     const { $api } = useNuxtApp()
 
-    const evaluations = ref<Evaluation[]>([])
-    const currentEvaluation = ref<Evaluation | null>(null)
-    // Selected team member for current evaluation flow
+    // Selected team member for current evaluation flow (persisted via useState)
     const selectedEvaluationUser = useState<User | null>('evaluation-selected-team-member', () => null)
-    const loading = ref(false)
-    const error = ref<string | null>(null)
 
     function setSelectedEvaluationUser(user: User | null) {
         selectedEvaluationUser.value = user

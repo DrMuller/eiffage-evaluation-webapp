@@ -14,17 +14,17 @@
                         </div>
                         <div class="md:col-span-1 sm:col-span-1">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Macro-compétences</label>
-                            <USelectMenu v-model="selectedMacroSkillIds" size="xl" :items="macroSkillOptions" :value-key="'value'"
-                                searchable multiple clearable
+                            <USelectMenu v-model="selectedMacroSkillIds" size="xl" :items="macroSkillOptions"
+                                :value-key="'value'" searchable multiple clearable
                                 placeholder="Sélectionner une ou plusieurs macro-compétences" class="w-full"
                                 @update:model-value="onMacroSkillSelected" />
                         </div>
                         <div class="md:col-span-1 sm:col-span-1" />
                         <div class="md:col-span-1 col-end-2 sm:col-span-1">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Emplois</label>
-                            <USelectMenu v-model="selectedJobIds" size="xl" :items="jobOptions" :value-key="'value'" searchable
-                                multiple clearable placeholder="Sélectionner un ou plusieurs emplois" class="w-full"
-                                @update:model-value="onJobSelected" />
+                            <USelectMenu v-model="selectedJobIds" size="xl" :items="jobOptions" :value-key="'value'"
+                                searchable multiple clearable placeholder="Sélectionner un ou plusieurs emplois"
+                                class="w-full" @update:model-value="onJobSelected" />
                         </div>
                         <div class="md:col-span-1 sm:col-span-1">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Rechercher une
@@ -133,7 +133,7 @@ const skillsToDisplay = computed(() => {
     const idsSet = new Set(selectedSkillIds.value)
     return props.skills
         .filter(sk => idsSet.has(sk._id))
-        .map(sk => ({ skill: sk, levelExpected: null }))
+        .map(sk => ({ skill: sk, expectedLevel: null }))
 })
 
 // Computed property for available skills filtered by search query
@@ -149,7 +149,7 @@ const filteredAvailableSkills = computed(() => {
     } else {
         availableSkills = props.skills.map(sk => ({
             skill: sk,
-            levelExpected: null
+            expectedLevel: null
         }))
     }
 
@@ -161,7 +161,7 @@ const filteredAvailableSkills = computed(() => {
     // Filter by macro skill type / macro skill selections
     if (selectedMacroSkillTypeIds.value.length > 0) {
         const macroTypeSet = new Set(selectedMacroSkillTypeIds.value)
-        availableSkills = availableSkills.filter(js => macroTypeSet.has(js.skill.macroSkill.macroSkillTypeId))
+        availableSkills = availableSkills.filter(js => macroTypeSet.has(js.skill.macroSkillTypeId))
     }
     if (selectedMacroSkillIds.value.length > 0) {
         const macroSkillSet = new Set(selectedMacroSkillIds.value)
@@ -207,7 +207,7 @@ async function onJobSelected() {
         .filter(sk => sk.jobIds.some(id => jobIdSet.has(id)))
         .map(sk => ({
             skill: sk,
-            levelExpected: null
+            expectedLevel: null
         }))
 }
 
@@ -217,25 +217,13 @@ function handleAddSkills() {
         isOpen.value = false
         return
     }
-
     const skillsToAdd: JobSkillWithLevel[] = []
-
-    if (selectedJobIds.value.length > 0) {
-        // Add skills from selected job
-        for (const js of jobSkillsForSelection.value) {
-            if (idsToAdd.has(js.skill._id)) {
-                skillsToAdd.push(js)
-            }
-        }
-    } else {
-        // Add skills without job context
-        for (const sk of props.skills) {
-            if (idsToAdd.has(sk._id)) {
-                skillsToAdd.push({ skill: sk, levelExpected: null })
-            }
+    for (const id of idsToAdd) {
+        const skill = props.skills.find(sk => sk._id === id)
+        if (skill) {
+            skillsToAdd.push({ skill, expectedLevel: null })
         }
     }
-
     emit('add-skills', skillsToAdd)
 
     // Reset state

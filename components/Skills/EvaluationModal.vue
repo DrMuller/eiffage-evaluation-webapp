@@ -10,7 +10,7 @@
                         </p>
                         <p class="text-sm text-gray-600">
                             <span class="font-medium">Niveau attendu:</span>
-                            {{ jobSkill.levelExpected || 'Non défini' }}
+                            {{ jobSkill.expectedLevel || 'Non défini' }}
                         </p>
                     </div>
 

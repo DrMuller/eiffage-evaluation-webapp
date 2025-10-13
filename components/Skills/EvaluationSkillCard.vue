@@ -16,10 +16,10 @@
                     <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
                 </UButton>
             </div>
-            <div v-if="jobSkill.levelExpected" class="flex items-center justify-between pt-2 border-t border-gray-200">
+            <div v-if="jobSkill.expectedLevel" class="flex items-center justify-between pt-2 border-t border-gray-200">
                 <p class="text-xs text-gray-500">
                     <span class="font-medium">Niveau attendu:</span>
-                    {{ jobSkill.levelExpected ?? 'Non défini' }}
+                    {{ jobSkill.expectedLevel ?? 'Non défini' }}
                 </p>
             </div>
         </div>

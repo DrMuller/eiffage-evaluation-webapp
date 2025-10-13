@@ -109,19 +109,18 @@ definePageMeta({
     requiresAuth: true
 })
 
-const { getJobSkills, createCompleteEvaluation, selectedEvaluationUser, setSelectedEvaluationUser } = useEvaluation()
-const { getCurrentUser, currentUser } = useUsers()
-const { getJobs, jobs } = useJobs()
-const { getSkills, skills, getMacroSkillTypes, getMacroSkills, macroSkills, macroSkillTypes } = useSkills()
-
+const { createCompleteEvaluation, selectedEvaluationUser, setSelectedEvaluationUser } = useEvaluation()
+const { currentUser } = useUsers()
+const { init: initData, loading: _initLoading, error: _initError } = useInit()
+const { skills } = useSkills()
 const toast = useToast()
 const router = useRouter()
 
 // State
 const jobSkills = ref<JobSkillWithLevel[]>([])
+const currentSkill = ref<JobSkillWithLevel | null>(null)
 const loadingSkills = ref(false)
 const isModalOpen = ref(false)
-const currentSkill = ref<JobSkillWithLevel | null>(null)
 
 const observedLevel = ref(3)
 const submitting = ref(false)
@@ -136,53 +135,24 @@ const evaluatedSkillsCount = computed(() => Object.keys(skillEvaluations.value).
 // Load current user and job skills for selected team member
 onMounted(async () => {
     try {
-        if (!skills.value)
-            await getSkills()
-        if (!macroSkillTypes.value)
-            await getMacroSkillTypes()
-        if (!jobs.value)
-            await getJobs()
-        if (!macroSkills.value)
-            await getMacroSkills()
-        if (!currentUser.value)
-            await getCurrentUser()
+        await initData()
+        jobSkills.value = skills.value.filter(sk => sk.jobIds.some(id => id === selectedUser.value?.jobId))
+            .map(sk => ({
+                skill: sk,
+                expectedLevel: null
+            }))
     } catch {
         toast.add({
             title: 'Erreur',
-            description: 'Impossible de charger votre profil',
+            description: 'Impossible de charger les données nécessaires',
             color: 'error'
         })
     }
-
     if (!selectedUser.value) {
         router.push('/')
         return
     }
-
-    await loadJobSkillsForSelectedUser()
 })
-
-async function loadJobSkillsForSelectedUser() {
-    const user = selectedUser.value
-    if (!user) return
-    skillEvaluations.value = {}
-    if (!user.jobId) {
-        jobSkills.value = []
-        return
-    }
-    loadingSkills.value = true
-    try {
-        jobSkills.value = await getJobSkills(user.jobId)
-    } catch {
-        toast.add({
-            title: 'Erreur',
-            description: 'Impossible de charger les compétences de l\'emploi',
-            color: 'error'
-        })
-    } finally {
-        loadingSkills.value = false
-    }
-}
 
 // Open modal to evaluate a skill
 function openEvaluationModal(jobSkill: JobSkillWithLevel) {
@@ -236,7 +206,6 @@ async function submitEvaluation() {
                 .filter(js => isSkillEvaluated(js.skill._id))
                 .map(js => ({
                     skillId: js.skill._id,
-                    expectedLevel: js.levelExpected,
                     observedLevel: skillEvaluations.value[js.skill._id] ?? null
                 }))
         }

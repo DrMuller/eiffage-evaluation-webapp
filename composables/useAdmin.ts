@@ -2,12 +2,13 @@ import { ref } from 'vue'
 import type { User } from '~/types/auth'
 import type { CreateUserRequest, CreateUserWithoutPasswordRequest } from '~/types/admin'
 
+// Hoisted shared state
+const users = ref<User[]>([])
+const loading = ref(false)
+const error = ref<string | null>(null)
+
 export const useAdmin = () => {
   const { $api } = useNuxtApp()
-
-  const users = ref<User[]>([])
-  const loading = ref(false)
-  const error = ref<string | null>(null)
 
   // Get all users (admin only)
   async function getAllUsers(): Promise<User[]> {

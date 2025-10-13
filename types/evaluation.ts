@@ -6,14 +6,12 @@ export interface EvaluationSkill {
     skillId: string;
     macroSkillId: string;
     macroSkillTypeId: string;
-    expectedLevel: number | null;
     observedLevel: number | null;
     gap: number | null;
     createdAt: Date;
     skill: {
         _id: string;
         name: string;
-        expectedLevel: number | null;
         macroSkill: {
             _id: string;
             name: string;
@@ -51,13 +49,12 @@ export interface CreateCompleteEvaluationRequest {
     evaluation: CreateEvaluationRequest;
     skills: Array<{
         skillId: string;
-        expectedLevel: number | null;
         observedLevel: number | null;
     }>;
 }
 
 export interface JobSkillWithLevel {
     skill: Skill;
-    levelExpected: number | null;
+    expectedLevel: number | null;
 }
 

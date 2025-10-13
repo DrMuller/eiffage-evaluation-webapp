@@ -45,6 +45,23 @@
         </div>
       </template>
     </UModal>
+    <UModal v-model:open="isNoCampaignModalOpen" title="Aucune campagne d'évaluation en cours">
+      <template #body>
+        <div class="p-6">
+          <p class="text-gray-700">
+            Aucune campagne d'évaluation n'est actuellement active. Vous ne pouvez pas lancer d'évaluation pour le
+            moment.
+          </p>
+          <div class="flex justify-end gap-3 pt-6">
+            <button
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              @click="isNoCampaignModalOpen = false">
+              OK
+            </button>
+          </div>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
 
@@ -58,26 +75,29 @@ definePageMeta({
 })
 
 const router = useRouter()
-const { getTeamMembers, teamMembers, loading: loadingUsers } = useUsers()
-const { getJobs } = useJobs()
-const { getMacroSkills, getMacroSkillTypes, getSkills } = useSkills()
+const { teamMembers, loading: loadingUsers } = useUsers()
+// Use the SAME instance for init and currentCampaign
+const { init: initData } = useInit()
+const { currentCampaign } = useEvaluationCampaign()
 const { setSelectedEvaluationUser, selectedEvaluationUser } = useEvaluation()
+
 
 type EvaluationType = 'job' | 'free'
 const type = ref<EvaluationType>('job')
 const isTeamModalOpen = ref(false)
+const isNoCampaignModalOpen = ref(false)
+
 
 
 onMounted(async () => {
-  await getTeamMembers()
-  await getJobs()
-  await getSkills()
-  await getMacroSkillTypes()
-  await getMacroSkills()
+  await initData()
 })
 
-
 function openTeamSelection(evaluationType: EvaluationType) {
+  if (!currentCampaign.value) {
+    isNoCampaignModalOpen.value = true
+    return
+  }
   isTeamModalOpen.value = true
   type.value = evaluationType
 }
