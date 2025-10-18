@@ -95,8 +95,8 @@
         </div>
 
         <!-- Evaluation Modal -->
-        <SkillsEvaluationModal v-model:open="isModalOpen" :job-skill="currentSkill" :level="observedLevel"
-            @save="saveEvaluation" @update:open="onModalOpenUpdate" />
+        <SkillsEvaluationModal v-model:open="isModalOpen" :job-skill="currentSkill"
+            :level="observedLevel" @save="saveEvaluation" @update:open="onModalOpenUpdate" />
 
     </div>
 </template>
@@ -111,6 +111,7 @@ definePageMeta({
 
 const { createCompleteEvaluation, selectedEvaluationUser, setSelectedEvaluationUser } = useEvaluation()
 const { currentUser } = useUsers()
+const { currentCampaign } = useEvaluationCampaign()
 const { init: initData, loading: _initLoading, error: _initError } = useInit()
 const { skills } = useSkills()
 const toast = useToast()
@@ -193,6 +194,7 @@ function isSkillEvaluated(skillId: string): boolean {
 // Submit complete evaluation
 async function submitEvaluation() {
     if (!selectedUser.value || !currentUser.value) return
+    if (!currentCampaign.value) return
 
     submitting.value = true
     try {
@@ -201,6 +203,7 @@ async function submitEvaluation() {
                 userId: selectedUser.value._id,
                 userJobId: selectedUser.value.jobId || undefined,
                 managerUserId: currentUser.value._id,
+                evaluationCampaignId: currentCampaign.value._id,
             },
             skills: jobSkills.value
                 .filter(js => isSkillEvaluated(js.skill._id))

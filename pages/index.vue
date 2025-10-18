@@ -1,27 +1,36 @@
 <template>
-  <div>
-    <div class="space-y-6">
-      <UButton
-        class="w-full rounded-xl p-10 bg-white shadow-[0_6px_0_rgba(0,0,0,0.25)] px-8 text-left flex items-center justify-between hover:bg-red-100 active:bg-red-200"
+  <div class="flex flex-col gap-4 items-center justify-center">
+    <UCard class="space-y-6 p-6 w-[450px]">
+      <UUser :name="currentUser?.firstName + ' ' + currentUser?.lastName" 
+      :description="currentUser?.email"
+      :avatar="{
+        icon: 'i-heroicons-user'
+      }" />
+    </UCard>
+    <UCard class="space-y-6 p-6 w-[450px]">
+      <div class="mb-8">
+        <h3 class="text-2xl font-bold mb-2">Évaluer les compétences</h3>
+        <p class="text-sm text-gray-500">Choisissez une option pour commencer l'évaluation d'un membre de votre équipe.
+        </p>
+      </div>
+      <UButton class="w-full rounded-xl p-6 flex items-center justify-between mb-8" size="xl"
         @click="openTeamSelection('job')">
-        <span>
-          <span class="text-xl font-semibold text-gray-900">Nouvelle évaluation</span>
-          <span class="block text-gray-500 text-sm">Évaluer les compétences sur l'emploi</span>
+        <span class="text-left">
+          <span class="text-xl font-semibold">Nouvelle évaluation</span>
+          <span class="block text-sm">Évaluer les compétences sur l'emploi</span>
         </span>
-        <UIcon name="i-heroicons-arrow-right" class="w-7 h-7 text-gray-900" />
+        <UIcon name="i-heroicons-arrow-right" class="w-10 h-10" />
       </UButton>
-      <UButton
-        class="w-full rounded-xl p-10 bg-white shadow-[0_6px_0_rgba(0,0,0,0.25)] px-8 text-left flex items-center justify-between hover:bg-red-100 active:bg-red-200"
-        @click="openTeamSelection('free')">
-        <span>
-          <span class="text-xl font-semibold text-gray-900">Nouvelle évaluation libre</span>
-          <span class="block text-gray-500 text-sm">Ajouter des compétences librement</span>
-        </span>
-        <UIcon name="i-heroicons-arrow-right" class="w-7 h-7 text-gray-900" />
-      </UButton>
-    </div>
+      <USeparator class="mb-8" label="ou" />
+      <div class="w-full flex items-center justify-between">
+        <UButton class="mx-auto" color="neutral" variant="link" @click="openTeamSelection('free')">
+          Nouvelle évaluation libre
+        </UButton>
+      </div>
+    </UCard>
 
-    <UModal v-model:open="isTeamModalOpen" title="Sélectionnez un membre de votre équipe">
+    <UDrawer v-model:open="isTeamModalOpen" should-scale-background set-background-color-on-scale
+      title="Sélectionnez un membre de votre équipe">
       <template #body>
         <div class="p-6">
           <div v-if="loadingUsers" class="flex justify-center py-8">
@@ -32,7 +41,7 @@
             <p class="text-gray-500">Aucun membre d'équipe trouvé</p>
           </div>
 
-          <div v-else>
+          <div v-else class="grid md:grid-cols-3 gap-4">
             <UsersUserCard v-for="user in teamMembers" :key="user._id" :user="user" @click="selectTeamMember" />
           </div>
           <div class="flex justify-end gap-3 pt-6">
@@ -44,7 +53,7 @@
           </div>
         </div>
       </template>
-    </UModal>
+    </UDrawer>
     <UModal v-model:open="isNoCampaignModalOpen" title="Aucune campagne d'évaluation en cours">
       <template #body>
         <div class="p-6">
@@ -81,12 +90,12 @@ const { init: initData } = useInit()
 const { currentCampaign } = useEvaluationCampaign()
 const { setSelectedEvaluationUser, selectedEvaluationUser } = useEvaluation()
 
+const { currentUser } = useUsers()
 
 type EvaluationType = 'job' | 'free'
 const type = ref<EvaluationType>('job')
 const isTeamModalOpen = ref(false)
 const isNoCampaignModalOpen = ref(false)
-
 
 
 onMounted(async () => {

@@ -1,6 +1,6 @@
 <template>
   <UApp :toaster="appConfig.toaster">
-    <div class="app">
+    <div class="app" data-vaul-drawer-wrapper>
       <NuxtLoadingIndicator color="#0034DF" error-color="#ed492c" />
       <NuxtLayout>
         <NuxtPage />

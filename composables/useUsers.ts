@@ -65,7 +65,7 @@ export const useUsers = () => {
       firstName?: string;
       lastName?: string;
       code?: string;
-      managerUserId?: string | null;
+      managerUserIds?: string[];
       roles?: string[];
       jobId?: string | null;
     }

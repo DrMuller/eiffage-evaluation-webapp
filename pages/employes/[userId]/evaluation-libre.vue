@@ -41,8 +41,7 @@
                             </div>
                             <div class="flex items-center gap-3">
                                 <div>
-                                    <UButton
-variant="subtle" class="px-8 py-3 rounded-full"
+                                    <UButton variant="subtle" class="px-8 py-3 rounded-full"
                                         @click="openAddSkillsModal">
                                         Ajouter des compétences
                                     </UButton>
@@ -53,7 +52,7 @@ variant="subtle" class="px-8 py-3 rounded-full"
                                             {{ evaluatedSkillsCount }}
                                         </span>
                                         <span class="text-4xl font-semibold text-gray-600">/{{ selectedSkills.length
-                                            }}</span>
+                                        }}</span>
                                     </div>
                                 </div>
 
@@ -63,8 +62,7 @@ variant="subtle" class="px-8 py-3 rounded-full"
                 </div>
 
                 <!-- Empty state -->
-                <div
-v-if="selectedSkills.length === 0"
+                <div v-if="selectedSkills.length === 0"
                     class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
                     <UIcon name="i-heroicons-information-circle" class="w-12 h-12 text-blue-600 mx-auto mb-2" />
                     <p class="text-blue-800 font-medium mb-4">Aucune compétence sélectionnée</p>
@@ -73,8 +71,7 @@ v-if="selectedSkills.length === 0"
                 <!-- Skills List -->
                 <div v-else>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                        <SkillsEvaluationSkillCard
-v-for="jobSkill in selectedSkills" :key="jobSkill.skill._id"
+                        <SkillsEvaluationSkillCard v-for="jobSkill in selectedSkills" :key="jobSkill.skill._id"
                             :job-skill="jobSkill" :is-evaluated="isSkillEvaluated(jobSkill.skill._id)"
                             :evaluation-score="skillEvaluations[jobSkill.skill._id]" :clickable="true" :removable="true"
                             @click="openEvaluationModal" @remove="removeSelectedSkill" />
@@ -82,8 +79,7 @@ v-for="jobSkill in selectedSkills" :key="jobSkill.skill._id"
 
                     <!-- Submit Button -->
                     <div class="flex justify-center">
-                        <UButton
-:disabled="evaluatedSkillsCount === 0 || submitting" class="px-8 py-3 rounded-full"
+                        <UButton :disabled="evaluatedSkillsCount === 0 || submitting" class="px-8 py-3 rounded-full"
                             @click="submitEvaluation">
                             <span v-if="submitting" class="flex items-center gap-2">
                                 <UIcon name="i-heroicons-arrow-path" class="w-5 h-5 animate-spin" />
@@ -99,13 +95,11 @@ v-for="jobSkill in selectedSkills" :key="jobSkill.skill._id"
         </div>
 
         <!-- Evaluation Modal -->
-        <SkillsEvaluationModal
-v-model:open="isModalOpen" :job-skill="currentSkill" :level="observedLevel"
+        <SkillsEvaluationModal v-model:open="isModalOpen" :job-skill="currentSkill" :level="observedLevel"
             @save="saveEvaluation" />
 
         <!-- Add Skills Modal -->
-        <SkillsAddSkillsModal
-v-model:open="isAddModalOpen" :jobs="jobs" :skills="skills" :macro-skills="macroSkills"
+        <SkillsAddSkillsModal v-model:open="isAddModalOpen" :jobs="jobs" :skills="skills" :macro-skills="macroSkills"
             :macro-skill-types="macroSkillTypes" :already-selected-skills="selectedSkills"
             @add-skills="handleAddSkills" />
 
@@ -140,6 +134,8 @@ const submitting = ref(false)
 // Store evaluations as { skillId: observedLevel }
 const skillEvaluations = ref<Record<string, number>>({})
 const selectedUser = computed(() => selectedEvaluationUser.value)
+
+const { currentCampaign } = useEvaluationCampaign()
 
 // Computed
 const evaluatedSkillsCount = computed(() => Object.keys(skillEvaluations.value).length)
@@ -213,6 +209,7 @@ function isSkillEvaluated(skillId: string): boolean {
 // Submit complete evaluation
 async function submitEvaluation() {
     if (!selectedUser.value || !currentUser.value) return
+    if (!currentCampaign.value) return
 
     submitting.value = true
     try {
@@ -220,6 +217,7 @@ async function submitEvaluation() {
             evaluation: {
                 userId: selectedUser.value._id,
                 managerUserId: currentUser.value._id,
+                evaluationCampaignId: currentCampaign.value._id,
             },
             skills: selectedSkills.value
                 .filter(js => isSkillEvaluated(js.skill._id))

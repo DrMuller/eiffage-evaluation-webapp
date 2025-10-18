@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-center">
-    <div class="p-8 bg-white rounded-xl shadow-sm w-[400px]">
+    <div class="p-8 bg-white rounded-xl shadow-sm w-[450px]">
       <div class="mb-8">
         <!-- <img src="/logo.webp" alt="Eiffage" class="w-10 h-10 mb-6"> -->
         <h1 class="text-3xl font-bold">Connexion à Eiffage</h1>

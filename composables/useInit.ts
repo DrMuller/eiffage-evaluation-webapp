@@ -3,9 +3,9 @@ import { ref } from 'vue'
 export const useInit = () => {
     const { getSkills, skills, getMacroSkills, macroSkills, getMacroSkillTypes, macroSkillTypes } = useSkills()
     const { getJobs, jobs } = useJobs()
-    const { getCurrentUser, currentUser, getTeamMembers, teamMembers } = useUsers()
+    const { getCurrentUser, currentUser, getTeamMembers } = useUsers()
     const { getCurrentEvaluationCampaign, currentCampaign } = useEvaluationCampaign()
-
+    const toast = useToast()
     const loading = ref(false)
     const error = ref<string | null>(null)
 
@@ -25,17 +25,12 @@ export const useInit = () => {
                 await Promise.all(tasks)
             }
             if (currentUser.value) await getTeamMembers()
-            return {
-                skills,
-                macroSkillTypes,
-                jobs,
-                macroSkills,
-                currentUser,
-                currentCampaign,
-            }
-        } catch (e) {
-            error.value = e instanceof Error ? e.message : 'Failed to initialize data'
-            throw e
+        } catch {
+            toast.add({
+                title: 'Erreur',
+                description: 'Impossible de charger les données nécessaires',
+                color: 'error'
+            })
         } finally {
             loading.value = false
         }

@@ -43,6 +43,7 @@ export interface CreateEvaluationRequest {
     userJobCode?: string;
     userId: string;
     managerUserId?: string;
+    evaluationCampaignId: string;
 }
 
 export interface CreateCompleteEvaluationRequest {
