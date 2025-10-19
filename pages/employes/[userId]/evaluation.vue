@@ -36,6 +36,8 @@
                                     <h2 class="text-xl font-semibold text-gray-900">
                                         {{ selectedUser.firstName }} {{ selectedUser.lastName }}
                                     </h2>
+                                    <UBadge v-if="userJob" class="mb-2" variant="soft" color="primary">{{ userJob.name
+                                    }}</UBadge>
                                     <p class="text-sm text-gray-500">{{ selectedUser.email }}</p>
                                 </div>
                             </div>
@@ -95,8 +97,8 @@
         </div>
 
         <!-- Evaluation Modal -->
-        <SkillsEvaluationModal v-model:open="isModalOpen" :job-skill="currentSkill"
-            :level="observedLevel" @save="saveEvaluation" @update:open="onModalOpenUpdate" />
+        <SkillsEvaluationModal v-model:open="isModalOpen" :job-skill="currentSkill" :level="observedLevel"
+            @save="saveEvaluation" @update:open="onModalOpenUpdate" />
 
     </div>
 </template>
@@ -114,6 +116,7 @@ const { currentUser } = useUsers()
 const { currentCampaign } = useEvaluationCampaign()
 const { init: initData, loading: _initLoading, error: _initError } = useInit()
 const { skills } = useSkills()
+const { jobs } = useJobs()
 const toast = useToast()
 const router = useRouter()
 
@@ -132,6 +135,10 @@ const selectedUser = computed(() => selectedEvaluationUser.value)
 
 // Computed
 const evaluatedSkillsCount = computed(() => Object.keys(skillEvaluations.value).length)
+const userJob = computed(() => {
+    if (!selectedUser.value?.jobId) return null
+    return jobs.value.find(job => job._id === selectedUser.value!.jobId)
+})
 
 // Load current user and job skills for selected team member
 onMounted(async () => {

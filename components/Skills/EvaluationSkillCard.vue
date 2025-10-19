@@ -6,8 +6,8 @@
         <div class="p-4 h-full space-y-2 flex flex-col justify-between">
             <div class="flex items-start gap-3">
                 <div class="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-lg font-bold text-sm"
-                    :class="isEvaluated ? 'bg-info-100 text-info-700' : ''">
-                    {{ isEvaluated ? `${evaluationScore}/5` : ' /5' }}
+                    :class="isEvaluated ? 'bg-info-100 text-info-700' : 'bg-gray-100 text-gray-700'">
+                    {{ isEvaluated ? `${evaluationScore}/4` : '-/4' }}
                 </div>
                 <h3 class="text-sm font-semibold text-gray-700 flex-1">
                     {{ jobSkill.skill.name }}

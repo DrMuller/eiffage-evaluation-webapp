@@ -15,6 +15,7 @@
                 <p class="text-sm font-medium text-gray-900">
                     {{ user.firstName }} {{ user.lastName }}
                 </p>
+                <UBadge v-if="userJob" class="mb-2" variant="soft" color="primary">{{ userJob.name }}</UBadge>
                 <p class="text-sm text-gray-500">{{ user.email }}</p>
                 <p class="text-xs text-gray-400">Code: {{ user.code }}</p>
             </div>
@@ -35,6 +36,13 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
     (e: 'click', user: User): void
 }>()
+
+const { jobs } = useJobs()
+
+const userJob = computed(() => {
+    if (!props.user.jobId) return null
+    return jobs.value.find(job => job._id === props.user.jobId)
+})
 
 function handleClick() {
     if (props.clickable) {
