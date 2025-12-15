@@ -9,5 +9,11 @@ export type Job = {
 
 export type JobSkillLink = {
     skill: import('./skills').Skill;
-    levelExpected: string | null;
+    skillId: string;
+    skillName: string;
+    macroSkillId: string;
+    macroSkillName: string;
+    macroSkillTypeId: string;
+    macroSkillTypeName: string;
+    levelExpected: number | null;
 };

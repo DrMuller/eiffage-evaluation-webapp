@@ -37,7 +37,7 @@
                                         {{ selectedUser.firstName }} {{ selectedUser.lastName }}
                                     </h2>
                                     <UBadge v-if="userJob" class="mb-2" variant="soft" color="primary">{{ userJob.name
-                                    }}</UBadge>
+                                        }}</UBadge>
                                     <p class="text-sm text-gray-500">{{ selectedUser.email }}</p>
                                 </div>
                             </div>
@@ -116,6 +116,7 @@ const { currentUser } = useUsers()
 const { currentCampaign } = useEvaluationCampaign()
 const { init: initData, loading: _initLoading, error: _initError } = useInit()
 const { skills } = useSkills()
+
 const { jobs } = useJobs()
 const toast = useToast()
 const router = useRouter()
@@ -147,7 +148,7 @@ onMounted(async () => {
         jobSkills.value = skills.value.filter(sk => sk.jobIds.some(id => id === selectedUser.value?.jobId))
             .map(sk => ({
                 skill: sk,
-                expectedLevel: null
+                expectedLevel: 3
             }))
     } catch {
         toast.add({

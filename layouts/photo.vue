@@ -2,8 +2,7 @@
     <div class="min-h-screen w-full flex">
         <!-- Left photo panel -->
         <div class="hidden md:block w-7/12 relative">
-            <div class="absolute inset-0 bg-cover bg-center"
-                style="background-image: url('/images/background.webp');" />
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/images/background.png');" />
             <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-black/10 to-transparent" />
             <div class="absolute top-6 left-6 flex items-center gap-3">
                 <img src="/full-logo.png" alt="Eiffage" class="h-20">

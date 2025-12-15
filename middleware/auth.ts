@@ -2,7 +2,7 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   const { isAuthenticated, initAuth } = useAuth()
   await initAuth()
-  console.log('isAuthenticated', isAuthenticated.value)
+  // console.log('isAuthenticated', isAuthenticated.value)
   // If user is not authenticated and trying to access a protected route
   if (!isAuthenticated.value && to.meta.requiresAuth) {
     // Redirect to login page with the returnUrl
