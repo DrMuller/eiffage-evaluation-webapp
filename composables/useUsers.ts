@@ -51,13 +51,6 @@ export const useUsers = () => {
     }
   }
 
-  // Refresh current user data
-  async function refreshCurrentUser(): Promise<void> {
-    if (currentUser.value) {
-      await getCurrentUser()
-    }
-  }
-
   // Update user (admin only)
   async function updateUser(
     userId: string,
@@ -109,11 +102,6 @@ export const useUsers = () => {
     } finally {
       loading.value = false
     }
-  }
-
-  // Refresh users list
-  async function refreshUsers(): Promise<void> {
-    await getAllUsers()
   }
 
   // Search users (admin only)
@@ -175,8 +163,6 @@ export const useUsers = () => {
     getCurrentUser,
     getAllUsers,
     updateUser,
-    refreshCurrentUser,
-    refreshUsers,
     searchUsers,
     getTeamMembers
   }
