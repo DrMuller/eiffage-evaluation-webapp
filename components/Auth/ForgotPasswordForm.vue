@@ -63,7 +63,7 @@ const onSubmit = async () => {
     try {
         isLoading.value = true;
 
-        await $api('/auth/reset-password-token', {
+        await $api('/auth/reset-password-token-evaluation', {
             method: 'POST',
             body: {
                 email: formState.email,

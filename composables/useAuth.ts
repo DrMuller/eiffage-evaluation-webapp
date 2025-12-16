@@ -147,7 +147,7 @@ export const useAuth = () => {
 
   async function requestPasswordReset(email: string): Promise<void> {
     try {
-      await $api('/auth/reset-password-token', {
+      await $api('/auth/reset-password-token-evaluation', {
         method: 'POST',
         body: { email }
       })

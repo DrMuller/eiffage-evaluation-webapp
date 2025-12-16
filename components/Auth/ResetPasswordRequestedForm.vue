@@ -54,7 +54,7 @@ const navigateToLogin = () => {
 };
 
 const resendEmail = async () => {
-    await $api('/auth/reset-password-token', {
+    await $api('/auth/reset-password-token-evaluation', {
         method: 'POST',
         body: {
             email: props.email,
