@@ -1,9 +1,7 @@
 <template>
   <div class="flex flex-col gap-4 items-center justify-center">
     <UCard class="space-y-6 p-6 w-[450px]">
-      <UUser :name="currentUser?.firstName + ' ' + currentUser?.lastName" 
-      :description="currentUser?.email"
-      :avatar="{
+      <UUser :name="currentUser?.firstName + ' ' + currentUser?.lastName" :description="currentUser?.email" :avatar="{
         icon: 'i-heroicons-user'
       }" />
     </UCard>
@@ -61,7 +59,11 @@
             Aucune campagne d'évaluation n'est actuellement active. Vous ne pouvez pas lancer d'évaluation pour le
             moment.
           </p>
-          <div class="flex justify-end gap-3 pt-6">
+          <div class="flex justify-between gap-3 pt-6">
+            <a :href="hrRequestMailto"
+              class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
+              Faire une demande auprès d'un administrateur RH
+            </a>
             <button
               class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
               @click="isNoCampaignModalOpen = false">
@@ -97,6 +99,25 @@ const type = ref<EvaluationType>('job')
 const isTeamModalOpen = ref(false)
 const isNoCampaignModalOpen = ref(false)
 
+const hrRequestMailto = computed(() => {
+  const managerName = currentUser.value
+    ? `${currentUser.value.firstName} ${currentUser.value.lastName}`
+    : 'Un manager'
+
+  const subject = encodeURIComponent('Demande d\'activation d\'une campagne d\'évaluation')
+  const body = encodeURIComponent(
+    `Bonjour,\n\n` +
+    `Je suis ${managerName} et je souhaiterais lancer une évaluation des compétences pour mon équipe.\n\n` +
+    `Cependant, il n'y a actuellement aucune campagne d'évaluation active.\n\n` +
+    `Pourriez-vous activer une campagne d'évaluation afin que je puisse procéder à l'évaluation de mes collaborateurs ?\n\n` +
+    `Merci d'avance pour votre aide.\n\n` +
+    `Cordialement,\n` +
+    `${managerName}`
+  )
+
+  // TODO: Remplacer par l'email réel de l'administrateur RH
+  return `mailto:rh@eiffage.com?subject=${subject}&body=${body}`
+})
 
 onMounted(async () => {
   await initData()
