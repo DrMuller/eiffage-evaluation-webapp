@@ -4,6 +4,11 @@
             <div class="p-6 space-y-6">
                 <!-- Filters -->
                 <UCard class="mb-6 p-6 rounded-xl">
+                    <p>
+                        Utiliser les filtres pour trouver les compétences que vous souhaitez évaluer.<br>
+                        Cliquez dessus pour les sélectionner.<br>
+                        Puis cliquer sur "ajouter" pour effectuer la notation<br>
+                    </p><br>
                     <div class="grid md:grid-cols-3 sm:grid-cols-1 gap-4">
                         <div class="md:col-span-1 sm:col-span-1">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Types de
@@ -43,7 +48,7 @@
                 </UCard>
                 <!-- Selected Skills -->
                 <div v-if="skillsToDisplay.length > 0" class="space-y-2">
-                    <h3 class="text-sm font-semibold text-gray-700">Compétences sélectionnées ({{
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Compétences sélectionnées ({{
                         skillsToDisplay.length }})</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <SkillsEvaluationSkillCard v-for="jobSkill in skillsToDisplay" :key="jobSkill.skill._id"
@@ -54,7 +59,7 @@
 
                 <!-- Available Skills to Add -->
                 <div v-if="filteredAvailableSkills.length > 0" class="space-y-2">
-                    <h3 class="text-sm font-semibold text-gray-700">Compétences disponibles</h3>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Compétences disponibles</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <SkillsEvaluationSkillCard v-for="jobSkill in filteredAvailableSkills" :key="jobSkill.skill._id"
                             :job-skill="jobSkill" :is-evaluated="false" :clickable="true" :removable="false"
@@ -241,9 +246,13 @@ function handleAddSkills() {
     })
 }
 
-// Reset state when modal is closed
+// Initialize selected skills from already evaluated skills when modal opens
 watch(isOpen, (newValue) => {
-    if (!newValue) {
+    if (newValue) {
+        // Add already selected skills to the selection when opening
+        selectedSkillIds.value = props.alreadySelectedSkills.map(js => js.skill._id)
+    } else {
+        // Reset state when modal is closed
         searchQuery.value = ''
         selectedMacroSkillTypeIds.value = []
         selectedMacroSkillIds.value = []

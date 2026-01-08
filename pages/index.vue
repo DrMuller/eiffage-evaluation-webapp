@@ -116,7 +116,7 @@ const hrRequestMailto = computed(() => {
   )
 
   // TODO: Remplacer par l'email réel de l'administrateur RH
-  return `mailto:rh@eiffage.com?subject=${subject}&body=${body}`
+  return `mailto:estelle.eledo@eiffage.com?subject=${subject}&body=${body}`
 })
 
 onMounted(async () => {

@@ -1,7 +1,7 @@
 <template>
-    <UModal :open="open" title="Évaluation" @update:open="onUpdateOpen" class="max-w-[60%]">
+    <UModal :open="open" title="Évaluation" class="max-w-[60%]" @update:open="onUpdateOpen">
         <template #body>
-            <div class="p-6">
+            <div class="">
                 <div v-if="jobSkill" class="space-y-6">
                     <!-- Skill Details -->
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
@@ -35,28 +35,29 @@
                     </div>
 
                     <!-- Level Details -->
-                    <div v-if="currentLevelInfo.definition"
-                        class="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3 h-[290px] overflow-y-auto">
                         <div class="flex justify-center">
                             <h3 class="text-md text-gray-700">
                                 {{ currentLevelInfo.name }}
                             </h3>
                         </div>
-                        <div>
-                            <UBadge color="info" variant="soft" class="mb-2">
-                                Définition
-                            </UBadge>
-                            <p class="text-sm text-gray-700">
-                                {{ currentLevelInfo.definition }}
-                            </p>
-                        </div>
-                        <div v-if="currentLevelInfo.example">
-                            <UBadge color="info" variant="soft" class="mb-2">
-                                Exemple
-                            </UBadge>
-                            <p class="text-sm text-gray-700 italic">
-                                {{ currentLevelInfo.example }}
-                            </p>
+                        <div v-if="currentLevelInfo.definition">
+                            <div>
+                                <UBadge color="info" variant="soft" class="mb-2">
+                                    Définition
+                                </UBadge>
+                                <p class="text-sm text-gray-700">
+                                    {{ currentLevelInfo.definition }}
+                                </p>
+                            </div>
+                            <div v-if="currentLevelInfo.example">
+                                <UBadge color="info" variant="soft" class="mb-2">
+                                    Exemple
+                                </UBadge>
+                                <p class="text-sm text-gray-700 italic">
+                                    {{ currentLevelInfo.example }}
+                                </p>
+                            </div>
                         </div>
                     </div>
 

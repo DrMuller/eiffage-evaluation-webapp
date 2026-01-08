@@ -7,8 +7,7 @@
             <div class="mb-8">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900">Évaluation des compétences</h1>
-                    <p class="mt-2 text-sm text-gray-600">Évaluez les compétences d'un membre de votre équipe sur son
-                        emploi
+                    <p class="mt-2 text-sm text-gray-600">Evaluer librement les compétences d'un membre de votre équipe
                     </p>
                 </div>
             </div>
@@ -52,7 +51,7 @@
                                             {{ evaluatedSkillsCount }}
                                         </span>
                                         <span class="text-4xl font-semibold text-gray-600">/{{ selectedSkills.length
-                                        }}</span>
+                                            }}</span>
                                     </div>
                                 </div>
 
