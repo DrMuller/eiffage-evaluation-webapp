@@ -73,9 +73,9 @@
                 <!-- Skills List -->
                 <div v-else>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                        <SkillsEvaluationSkillCard v-for="jobSkill in jobSkills" :key="jobSkill.skill._id"
-                            :job-skill="jobSkill" :is-evaluated="isSkillEvaluated(jobSkill.skill._id)"
-                            :evaluation-score="skillEvaluations[jobSkill.skill._id]" :clickable="true"
+                        <SkillsEvaluationSkillCard v-for="skill in jobSkills" :key="skill._id"
+                            :job-skill="skill" :is-evaluated="isSkillEvaluated(skill._id)"
+                            :evaluation-score="skillEvaluations[skill._id]" :clickable="true"
                             @click="openEvaluationModal" />
                     </div>
 
@@ -97,14 +97,14 @@
         </div>
 
         <!-- Evaluation Modal -->
-        <SkillsEvaluationModal v-model:open="isModalOpen" :job-skill="currentSkill" :level="observedLevel"
+        <SkillsEvaluationModal v-model:open="isModalOpen" :skill="currentSkill" :level="observedLevel"
             @save="saveEvaluation" @update:open="onModalOpenUpdate" />
 
     </div>
 </template>
 
 <script setup lang="ts">
-import type { JobSkillWithLevel } from '~/types/evaluation'
+import type { Skill } from '~/types/skills'
 
 definePageMeta({
     middleware: ['auth'],
@@ -122,8 +122,8 @@ const toast = useToast()
 const router = useRouter()
 
 // State
-const jobSkills = ref<JobSkillWithLevel[]>([])
-const currentSkill = ref<JobSkillWithLevel | null>(null)
+const jobSkills = ref<Skill[]>([])
+const currentSkill = ref<Skill | null>(null)
 const loadingSkills = ref(false)
 const isModalOpen = ref(false)
 
@@ -145,11 +145,7 @@ const userJob = computed(() => {
 onMounted(async () => {
     try {
         await initData()
-        jobSkills.value = skills.value.filter(sk => sk.jobIds.some(id => id === selectedUser.value?.jobId))
-            .map(sk => ({
-                skill: sk,
-                expectedLevel: 3
-            }))
+        jobSkills.value = skills.value.filter(sk => sk.jobId === selectedUser.value?.jobId)
     } catch {
         toast.add({
             title: 'Erreur',
@@ -164,10 +160,10 @@ onMounted(async () => {
 })
 
 // Open modal to evaluate a skill
-function openEvaluationModal(jobSkill: JobSkillWithLevel) {
-    currentSkill.value = jobSkill
+function openEvaluationModal(skill: Skill) {
+    currentSkill.value = skill
 
-    observedLevel.value = skillEvaluations.value[jobSkill.skill._id] ?? 3
+    observedLevel.value = skillEvaluations.value[skill._id] ?? 3
     isModalOpen.value = true
 }
 
@@ -180,7 +176,7 @@ function closeModal() {
 // Save evaluation
 function saveEvaluation(level: number) {
     if (currentSkill.value) {
-        skillEvaluations.value[currentSkill.value.skill._id] = level
+        skillEvaluations.value[currentSkill.value._id] = level
         closeModal()
     }
 }
@@ -214,10 +210,10 @@ async function submitEvaluation() {
                 evaluationCampaignId: currentCampaign.value._id,
             },
             skills: jobSkills.value
-                .filter(js => isSkillEvaluated(js.skill._id))
-                .map(js => ({
-                    skillId: js.skill._id,
-                    observedLevel: skillEvaluations.value[js.skill._id] ?? null
+                .filter(skill => isSkillEvaluated(skill._id))
+                .map(skill => ({
+                    skillId: skill._id,
+                    observedLevel: skillEvaluations.value[skill._id] ?? null
                 }))
         }
 

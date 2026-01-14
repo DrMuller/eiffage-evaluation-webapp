@@ -22,11 +22,13 @@ export const useSkills = () => {
     type SkillApi = {
         _id: string
         name: string
+        jobId: string
+        jobName: string
+        expectedLevel: number
         macroSkillId: string
         macroSkillName: string
         macroSkillTypeId: string
         macroSkillTypeName: string
-        jobSkills: { jobId: string; expectedLevel: number }[]
         createdAt: string | Date
     }
 
@@ -34,20 +36,19 @@ export const useSkills = () => {
         return {
             _id: dto._id,
             name: dto.name,
+            jobId: dto.jobId,
+            jobName: dto.jobName,
+            expectedLevel: dto.expectedLevel,
             macroSkillId: dto.macroSkillId,
-            macroSkill: {
-                _id: dto.macroSkillId,
-                name: dto.macroSkillName,
-                macroSkillTypeId: dto.macroSkillTypeId,
-                macroSkillType: {
-                    _id: dto.macroSkillTypeId,
-                    name: dto.macroSkillTypeName,
-                },
-                createdAt: new Date(dto.createdAt),
-            },
-            jobIds: dto.jobSkills?.map(j => j.jobId) ?? [],
+            macroSkillName: dto.macroSkillName,
+            macroSkillTypeId: dto.macroSkillTypeId,
+            macroSkillTypeName: dto.macroSkillTypeName,
             createdAt: new Date(dto.createdAt),
         }
+    }
+
+    function getSkillsByJobId(jobId: string): Skill[] {
+        return skills.value.filter(s => s.jobId === jobId)
     }
 
     // Macro Skill Types
@@ -267,6 +268,7 @@ export const useSkills = () => {
         getSkills,
         getSkillById,
         createSkill,
+        getSkillsByJobId,
 
         // Utilities
         refreshAllData,

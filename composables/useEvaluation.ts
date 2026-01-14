@@ -94,6 +94,7 @@ export const useEvaluation = () => {
         error.value = null
 
         try {
+            // JobSkillWithLevel is now just an alias for Skill
             const response = await $api<JobSkillWithLevel[]>(`/jobs/${jobId}/skills`, {
                 method: 'GET'
             })

@@ -1,5 +1,6 @@
 import { ref } from 'vue'
-import type { Job, JobSkillLink } from '~/types/jobs'
+import type { Job } from '~/types/jobs'
+import type { Skill } from '~/types/skills'
 
 export const useJobs = () => {
     const { $api } = useNuxtApp()
@@ -25,12 +26,12 @@ export const useJobs = () => {
         }
     }
 
-    async function getJobSkills(jobId: string): Promise<JobSkillLink[]> {
+    async function getJobSkills(jobId: string): Promise<Skill[]> {
         loading.value = true
         error.value = null
 
         try {
-            const response = await $api<JobSkillLink[]>(`/jobs/${jobId}/skills`, { method: 'GET' })
+            const response = await $api<Skill[]>(`/jobs/${jobId}/skills`, { method: 'GET' })
             return response
         } catch (err) {
             error.value = err instanceof Error ? err.message : 'Failed to fetch job skills'

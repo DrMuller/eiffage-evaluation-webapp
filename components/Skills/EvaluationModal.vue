@@ -2,11 +2,11 @@
     <UModal :open="open" title="Évaluation" class="max-w-[60%]" @update:open="onUpdateOpen">
         <template #body>
             <div class="">
-                <div v-if="jobSkill" class="space-y-6">
+                <div v-if="skill" class="space-y-6">
                     <!-- Skill Details -->
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
                         <p class="text-sm text-gray-600">
-                            <span class="font-medium">{{ jobSkill.skill.name }}</span>
+                            <span class="font-medium">{{ skill.name }}</span>
                         </p>
                     </div>
 
@@ -14,7 +14,7 @@
                     <div class="space-y-4">
                         <div class="text-sm font-medium text-gray-700">
                             Niveau attendu:
-                            <span class="font-bold text-lg">{{ jobSkill.expectedLevel || 0 }}</span>
+                            <span class="font-bold text-lg">{{ skill.expectedLevel || 0 }}</span>
                             <UBadge color="neutral" variant="subtle" size="md" class="ml-2">
                                 {{ expectedLevelName }}
                             </UBadge>
@@ -80,12 +80,12 @@
 </template>
 
 <script setup lang="ts">
-import type { JobSkillWithLevel } from '~/types/evaluation'
+import type { Skill } from '~/types/skills'
 import { skillLevels, useSkillLevelInfo, useSkillLevelLabel } from '~/composables/useSkillLevel'
 
 const props = defineProps<{
     open: boolean
-    jobSkill: JobSkillWithLevel | null
+    skill: Skill | null
     level: number
 }>()
 
@@ -98,8 +98,8 @@ const localLevel = ref(1)
 
 const currentLevelInfo = computed(() => useSkillLevelInfo(localLevel.value))
 const expectedLevelName = computed(() => {
-    if (!props.jobSkill?.expectedLevel) return 'Non défini'
-    return useSkillLevelLabel(props.jobSkill.expectedLevel)
+    if (!props.skill?.expectedLevel) return 'Non défini'
+    return useSkillLevelLabel(props.skill.expectedLevel)
 })
 
 // watch(() => props.level, (newVal) => {

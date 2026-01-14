@@ -70,9 +70,9 @@
                 <!-- Skills List -->
                 <div v-else>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                        <SkillsEvaluationSkillCard v-for="jobSkill in selectedSkills" :key="jobSkill.skill._id"
-                            :job-skill="jobSkill" :is-evaluated="isSkillEvaluated(jobSkill.skill._id)"
-                            :evaluation-score="skillEvaluations[jobSkill.skill._id]" :clickable="true" :removable="true"
+                        <SkillsEvaluationSkillCard v-for="skill in selectedSkills" :key="skill._id"
+                            :job-skill="skill" :is-evaluated="isSkillEvaluated(skill._id)"
+                            :evaluation-score="skillEvaluations[skill._id]" :clickable="true" :removable="true"
                             @click="openEvaluationModal" @remove="removeSelectedSkill" />
                     </div>
 
@@ -94,7 +94,7 @@
         </div>
 
         <!-- Evaluation Modal -->
-        <SkillsEvaluationModal v-model:open="isModalOpen" :job-skill="currentSkill" :level="observedLevel"
+        <SkillsEvaluationModal v-model:open="isModalOpen" :skill="currentSkill" :level="observedLevel"
             @save="saveEvaluation" />
 
         <!-- Add Skills Modal -->
@@ -106,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import type { JobSkillWithLevel } from '~/types/evaluation'
+import type { Skill } from '~/types/skills'
 
 definePageMeta({
     middleware: ['auth'],
@@ -123,9 +123,9 @@ const toast = useToast()
 const router = useRouter()
 
 // State
-const selectedSkills = ref<JobSkillWithLevel[]>([])
+const selectedSkills = ref<Skill[]>([])
 const isModalOpen = ref(false)
-const currentSkill = ref<JobSkillWithLevel | null>(null)
+const currentSkill = ref<Skill | null>(null)
 
 const observedLevel = ref(3)
 const submitting = ref(false)
@@ -163,24 +163,24 @@ function openAddSkillsModal() {
     isAddModalOpen.value = true
 }
 
-function handleAddSkills(skillsToAdd: JobSkillWithLevel[]) {
+function handleAddSkills(skillsToAdd: Skill[]) {
     for (const skill of skillsToAdd) {
-        if (!selectedSkills.value.some(s => s.skill._id === skill.skill._id)) {
+        if (!selectedSkills.value.some(s => s._id === skill._id)) {
             selectedSkills.value.push(skill)
         }
     }
 }
 
 function removeSelectedSkill(skillId: string) {
-    selectedSkills.value = selectedSkills.value.filter(s => s.skill._id !== skillId)
+    selectedSkills.value = selectedSkills.value.filter(s => s._id !== skillId)
     const { [skillId]: _removed, ...rest } = skillEvaluations.value
     skillEvaluations.value = rest
 }
 
 // Open modal to evaluate a skill
-function openEvaluationModal(jobSkill: JobSkillWithLevel) {
-    currentSkill.value = jobSkill
-    observedLevel.value = skillEvaluations.value[jobSkill.skill._id] ?? 3
+function openEvaluationModal(skill: Skill) {
+    currentSkill.value = skill
+    observedLevel.value = skillEvaluations.value[skill._id] ?? 3
     isModalOpen.value = true
 }
 
@@ -193,7 +193,7 @@ function closeModal() {
 // Save evaluation
 function saveEvaluation(level: number) {
     if (currentSkill.value) {
-        skillEvaluations.value[currentSkill.value.skill._id] = level
+        skillEvaluations.value[currentSkill.value._id] = level
         closeModal()
     }
 }
@@ -219,10 +219,10 @@ async function submitEvaluation() {
                 evaluationCampaignId: currentCampaign.value._id,
             },
             skills: selectedSkills.value
-                .filter(js => isSkillEvaluated(js.skill._id))
-                .map(js => ({
-                    skillId: js.skill._id,
-                    observedLevel: skillEvaluations.value[js.skill._id] ?? null
+                .filter(skill => isSkillEvaluated(skill._id))
+                .map(skill => ({
+                    skillId: skill._id,
+                    observedLevel: skillEvaluations.value[skill._id] ?? null
                 }))
         }
 
