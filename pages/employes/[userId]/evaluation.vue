@@ -72,12 +72,24 @@
 
                 <!-- Skills List -->
                 <div v-else>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                        <SkillsEvaluationSkillCard v-for="skill in jobSkills" :key="skill._id"
-                            :job-skill="skill" :is-evaluated="isSkillEvaluated(skill._id)"
-                            :evaluation-score="skillEvaluations[skill._id]" :clickable="true"
-                            @click="openEvaluationModal" />
-                    </div>
+                    <!-- Tabs for MacroSkillTypes -->
+                    <UTabs :items="tabItems" :default-value="tabItems[0]?.value" class="w-full mb-6">
+                        <template v-for="tab in tabItems" :key="tab.slot" #[tab.slot]>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                                <SkillsEvaluationSkillCard v-for="skill in getSkillsByMacroType(tab.value)"
+                                    :key="skill._id" :job-skill="skill" :is-evaluated="isSkillEvaluated(skill._id)"
+                                    :evaluation-score="skillEvaluations[skill._id]" :clickable="true"
+                                    @click="openEvaluationModal" />
+                            </div>
+
+                            <!-- Empty state for tab with no skills -->
+                            <div v-if="getSkillsByMacroType(tab.value).length === 0"
+                                class="text-center py-8 text-gray-500">
+                                <UIcon name="i-heroicons-inbox" class="w-12 h-12 mx-auto mb-2 opacity-50" />
+                                <p>Aucune compétence dans cette catégorie</p>
+                            </div>
+                        </template>
+                    </UTabs>
 
                     <!-- Submit Button -->
                     <div class="flex justify-center">
@@ -105,6 +117,7 @@
 
 <script setup lang="ts">
 import type { Skill } from '~/types/skills'
+import type { BadgeProps, TabsItem } from '@nuxt/ui'
 
 definePageMeta({
     middleware: ['auth'],
@@ -140,6 +153,37 @@ const userJob = computed(() => {
     if (!selectedUser.value?.jobId) return null
     return jobs.value.find(job => job._id === selectedUser.value!.jobId)
 })
+
+// Group skills by macroSkillTypeName and create tabs
+const macroSkillTypes = computed(() => {
+    const types = new Set<string>()
+    jobSkills.value.forEach(skill => {
+        if (skill.macroSkillTypeName) {
+            types.add(skill.macroSkillTypeName)
+        }
+    })
+    return Array.from(types).sort()
+})
+
+// Create tab items for UTabs
+const tabItems = computed<TabsItem[]>(() => {
+    return macroSkillTypes.value.map((type, index) => {
+        const skillsInType = jobSkills.value.filter(skill => skill.macroSkillTypeName === type)
+        const evaluatedInType = skillsInType.filter(skill => isSkillEvaluated(skill._id)).length
+        
+        return {
+            label: `${type} (${evaluatedInType}/${skillsInType.length})`,
+            value: type,
+            slot: `tab-${index}`,
+        }
+    })
+})
+
+// Get skills filtered by macroSkillTypeName
+function getSkillsByMacroType(macroType: string | number | undefined): Skill[] {
+    if (!macroType || typeof macroType !== 'string') return []
+    return jobSkills.value.filter(skill => skill.macroSkillTypeName === macroType)
+}
 
 // Load current user and job skills for selected team member
 onMounted(async () => {
