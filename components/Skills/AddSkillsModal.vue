@@ -51,8 +51,8 @@
                     <h3 class="text-xl font-semibold text-gray-700 mb-4">Compétences sélectionnées ({{
                         skillsToDisplay.length }})</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <SkillsEvaluationSkillCard v-for="jobSkill in skillsToDisplay" :key="jobSkill.skill._id"
-                            :job-skill="jobSkill" :is-evaluated="false" :clickable="false" :removable="true"
+                        <SkillsEvaluationSkillCard v-for="skill in skillsToDisplay" :key="skill._id"
+                            :job-skill="skill" :is-evaluated="false" :clickable="false" :removable="true"
                             :variant="'subtle'" @remove="removeSkillFromSelection" />
                     </div>
                 </div>
@@ -61,8 +61,8 @@
                 <div v-if="filteredAvailableSkills.length > 0" class="space-y-2">
                     <h3 class="text-xl font-semibold text-gray-700 mb-4">Compétences disponibles</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <SkillsEvaluationSkillCard v-for="jobSkill in filteredAvailableSkills" :key="jobSkill.skill._id"
-                            :job-skill="jobSkill" :is-evaluated="false" :clickable="true" :removable="false"
+                        <SkillsEvaluationSkillCard v-for="skill in filteredAvailableSkills" :key="skill._id"
+                            :job-skill="skill" :is-evaluated="false" :clickable="true" :removable="false"
                             @click="addSkillToSelection" />
                     </div>
                 </div>
@@ -98,7 +98,7 @@ const props = defineProps<Props>()
 // Emits
 const emit = defineEmits<{
     'update:open': [value: boolean]
-    'add-skills': [skills: JobSkillWithLevel[]]
+    'add-skills': [skills: Skill[]]
 }>()
 
 // Composables
@@ -113,7 +113,6 @@ const isOpen = computed({
 
 // State
 const selectedJobIds = ref<string[]>([])
-const jobSkillsForSelection = ref<JobSkillWithLevel[]>([])
 const selectedSkillIds = ref<string[]>([])
 const searchQuery = ref('')
 const selectedMacroSkillTypeIds = ref<string[]>([])
@@ -123,7 +122,6 @@ const selectedMacroSkillIds = ref<string[]>([])
 const jobOptions = computed(() => props.jobs.map(j => ({ label: j.name, value: j._id })))
 const macroSkillTypeOptions = computed(() => props.macroSkillTypes.map(t => ({ label: t.name, value: t._id })))
 const macroSkillOptions = computed(() => {
-    // if (!selectedMacroSkillTypeIds.value || selectedMacroSkillTypeIds.value.length === 0) return []
     const allowedTypes = new Set(selectedMacroSkillTypeIds.value)
     return props.macroSkills
         .filter(ms => allowedTypes.size === 0 || allowedTypes.has(ms.macroSkillTypeId))
@@ -136,47 +134,42 @@ const skillsToDisplay = computed(() => {
         return []
     }
     const idsSet = new Set(selectedSkillIds.value)
-    return props.skills
-        .filter(sk => idsSet.has(sk._id))
-        .map(sk => ({ skill: sk, expectedLevel: null }))
+    return props.skills.filter(sk => idsSet.has(sk._id))
 })
 
 // Computed property for available skills filtered by search query
 const filteredAvailableSkills = computed(() => {
     const selectedIds = new Set(selectedSkillIds.value)
-    const alreadySelectedIds = new Set(props.alreadySelectedSkills.map(js => js.skill._id))
+    const alreadySelectedIds = new Set(props.alreadySelectedSkills.map(s => s._id))
     const query = searchQuery.value.toLowerCase().trim()
 
-    let availableSkills: JobSkillWithLevel[]
+    let availableSkills = props.skills
 
+    // Filter by selected jobs if any
     if (selectedJobIds.value.length > 0) {
-        availableSkills = jobSkillsForSelection.value
-    } else {
-        availableSkills = props.skills.map(sk => ({
-            skill: sk,
-            expectedLevel: null
-        }))
+        const jobIdSet = new Set(selectedJobIds.value)
+        availableSkills = availableSkills.filter(sk => jobIdSet.has(sk.jobId))
     }
 
     // Filter out already selected skills (both in modal and parent)
-    availableSkills = availableSkills.filter(js =>
-        !selectedIds.has(js.skill._id) && !alreadySelectedIds.has(js.skill._id)
+    availableSkills = availableSkills.filter(sk =>
+        !selectedIds.has(sk._id) && !alreadySelectedIds.has(sk._id)
     )
 
     // Filter by macro skill type / macro skill selections
     if (selectedMacroSkillTypeIds.value.length > 0) {
         const macroTypeSet = new Set(selectedMacroSkillTypeIds.value)
-        availableSkills = availableSkills.filter(js => macroTypeSet.has(js.skill.macroSkillTypeId))
+        availableSkills = availableSkills.filter(sk => macroTypeSet.has(sk.macroSkillTypeId))
     }
     if (selectedMacroSkillIds.value.length > 0) {
         const macroSkillSet = new Set(selectedMacroSkillIds.value)
-        availableSkills = availableSkills.filter(js => macroSkillSet.has(js.skill.macroSkillId))
+        availableSkills = availableSkills.filter(sk => macroSkillSet.has(sk.macroSkillId))
     }
 
     // Filter by search query if provided
     if (query) {
-        availableSkills = availableSkills.filter(js =>
-            js.skill.name.toLowerCase().includes(query)
+        availableSkills = availableSkills.filter(sk =>
+            sk.name.toLowerCase().includes(query)
         )
     }
 
@@ -184,9 +177,9 @@ const filteredAvailableSkills = computed(() => {
 })
 
 // Methods
-function addSkillToSelection(jobSkill: JobSkillWithLevel) {
-    if (!selectedSkillIds.value.includes(jobSkill.skill._id)) {
-        selectedSkillIds.value.push(jobSkill.skill._id)
+function addSkillToSelection(skill: Skill) {
+    if (!selectedSkillIds.value.includes(skill._id)) {
+        selectedSkillIds.value.push(skill._id)
     }
 }
 
@@ -203,17 +196,7 @@ function removeSkillFromSelection(skillId: string) {
 }
 
 async function onJobSelected() {
-    if (!selectedJobIds.value || selectedJobIds.value.length === 0) {
-        jobSkillsForSelection.value = []
-        return
-    }
-    const jobIdSet = new Set(selectedJobIds.value)
-    jobSkillsForSelection.value = props.skills
-        .filter(sk => sk.jobIds.some(id => jobIdSet.has(id)))
-        .map(sk => ({
-            skill: sk,
-            expectedLevel: null
-        }))
+    // Job filtering is handled reactively in filteredAvailableSkills
 }
 
 function handleAddSkills() {
@@ -222,11 +205,11 @@ function handleAddSkills() {
         isOpen.value = false
         return
     }
-    const skillsToAdd: JobSkillWithLevel[] = []
+    const skillsToAdd: Skill[] = []
     for (const id of idsToAdd) {
         const skill = props.skills.find(sk => sk._id === id)
         if (skill) {
-            skillsToAdd.push({ skill, expectedLevel: null })
+            skillsToAdd.push(skill)
         }
     }
     emit('add-skills', skillsToAdd)
@@ -234,7 +217,6 @@ function handleAddSkills() {
     // Reset state
     selectedSkillIds.value = []
     selectedJobIds.value = []
-    jobSkillsForSelection.value = []
     searchQuery.value = ''
     selectedMacroSkillTypeIds.value = []
     selectedMacroSkillIds.value = []
@@ -250,7 +232,7 @@ function handleAddSkills() {
 watch(isOpen, (newValue) => {
     if (newValue) {
         // Add already selected skills to the selection when opening
-        selectedSkillIds.value = props.alreadySelectedSkills.map(js => js.skill._id)
+        selectedSkillIds.value = props.alreadySelectedSkills.map(s => s._id)
     } else {
         // Reset state when modal is closed
         searchQuery.value = ''

@@ -54,8 +54,6 @@ export interface CreateCompleteEvaluationRequest {
     }>;
 }
 
-export interface JobSkillWithLevel {
-    skill: Skill;
-    expectedLevel: number | null;
-}
+// JobSkillWithLevel is now just an alias for Skill since it contains expectedLevel
+export type JobSkillWithLevel = Skill;
 

@@ -10,7 +10,7 @@
                     {{ isEvaluated ? `${evaluationScore}/4` : '-/4' }}
                 </div>
                 <h3 class="text-sm font-semibold text-gray-700 flex-1">
-                    {{ jobSkill.skill.name }}
+                    {{ jobSkill.name }}
                 </h3>
                 <UButton v-if="removable" color="neutral" variant="ghost" @click.stop="handleRemove">
                     <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
@@ -61,6 +61,6 @@ function handleCardClick() {
 }
 
 function handleRemove() {
-    emit('remove', props.jobSkill.skill._id)
+    emit('remove', props.jobSkill._id)
 }
 </script>
