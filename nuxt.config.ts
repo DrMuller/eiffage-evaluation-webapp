@@ -66,5 +66,11 @@ export default defineNuxtConfig({
     provider: 'ipx'
   },
 
+  vite: {
+    server: {
+      allowedHosts: ['local.eiffage-evaluation']
+    }
+  },
+
   compatibilityDate: '2025-04-02',
 })

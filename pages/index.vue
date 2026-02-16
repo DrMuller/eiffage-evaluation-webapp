@@ -60,15 +60,21 @@
             moment.
           </p>
           <div class="flex justify-between gap-3 pt-6">
-            <a :href="hrRequestMailto"
-              class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
-              Faire une demande auprès d'un administrateur RH
-            </a>
-            <button
-              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-              @click="isNoCampaignModalOpen = false">
+            <UButton
+              color="primary"
+              :loading="sendingHrRequest"
+              :disabled="hrRequestSent"
+              @click="sendHrRequest"
+            >
+              {{ hrRequestSent ? 'Demande envoyée' : 'Faire une demande auprès d\'un administrateur RH' }}
+            </UButton>
+            <UButton
+              color="neutral"
+              variant="outline"
+              @click="isNoCampaignModalOpen = false"
+            >
               OK
-            </button>
+            </UButton>
           </div>
         </div>
       </template>
@@ -99,25 +105,37 @@ const type = ref<EvaluationType>('job')
 const isTeamModalOpen = ref(false)
 const isNoCampaignModalOpen = ref(false)
 
-const hrRequestMailto = computed(() => {
+const { sendHrCampaignRequest } = useNotification()
+const toast = useToast()
+const sendingHrRequest = ref(false)
+const hrRequestSent = ref(false)
+
+async function sendHrRequest() {
   const managerName = currentUser.value
     ? `${currentUser.value.firstName} ${currentUser.value.lastName}`
     : 'Un manager'
 
-  const subject = encodeURIComponent('Demande d\'activation d\'une campagne d\'évaluation')
-  const body = encodeURIComponent(
-    `Bonjour,\n\n` +
-    `Je suis ${managerName} et je souhaiterais lancer une évaluation des compétences pour mon équipe.\n\n` +
-    `Cependant, il n'y a actuellement aucune campagne d'évaluation active.\n\n` +
-    `Pourriez-vous activer une campagne d'évaluation afin que je puisse procéder à l'évaluation de mes collaborateurs ?\n\n` +
-    `Merci d'avance pour votre aide.\n\n` +
-    `Cordialement,\n` +
-    `${managerName}`
-  )
-
-  // TODO: Remplacer par l'email réel de l'administrateur RH
-  return `mailto:estelle.eledo@eiffage.com?subject=${subject}&body=${body}`
-})
+  sendingHrRequest.value = true
+  try {
+    const response = await sendHrCampaignRequest(managerName)
+    hrRequestSent.value = true
+    toast.add({
+      title: 'Demande envoyée',
+      description: response.message,
+      color: 'success',
+      icon: 'i-heroicons-check-circle',
+    })
+  } catch (error: any) {
+    toast.add({
+      title: 'Erreur',
+      description: error?.message || 'Une erreur est survenue lors de l\'envoi de la demande.',
+      color: 'error',
+      icon: 'i-heroicons-exclamation-triangle',
+    })
+  } finally {
+    sendingHrRequest.value = false
+  }
+}
 
 onMounted(async () => {
   await initData()
